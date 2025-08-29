@@ -1,15 +1,20 @@
 {
-  "name": "recall",
+  "name": "spawner",
   "version": "1.0.0",
-  "description": "a website which record meet and create a ",
+  "description": "",
   "license": "ISC",
   "author": "aryan",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -b && node dist/index.js"
   },
   "dependencies": {
+    "@types/selenium-webdriver": "^4.1.28",
+    "selenium-webdriver": "^4.35.0",
     "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
   }
 }
