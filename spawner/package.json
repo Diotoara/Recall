@@ -10,11 +10,11 @@
     "dev": "tsc -b && node dist/index.js"
   },
   "dependencies": {
-    "@types/selenium-webdriver": "^4.1.28",
     "selenium-webdriver": "^4.35.0",
     "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.3.0",
+    "@types/selenium-webdriver": "^4.1.28"
   }
 }

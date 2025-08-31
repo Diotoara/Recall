@@ -1,4 +1,4 @@
-import { Builder, Browser, By, Key, until, WebDriver } from 'selenium-webdriver';
+import { Builder, Browser, By, Key, until, WebDriver } from "selenium-webdriver";
 import { Options} from 'selenium-webdriver/chrome.js';
 
 async function getDriver() {
@@ -17,7 +17,7 @@ async function openMeet(driver: WebDriver) {
   
 
   try {
-    await driver.get('https://meet.google.com/jgy-msbd-pwr')
+    await driver.get('https://meet.google.com/wgt-pfpi-pod')
     const popup = await driver.wait(until.elementLocated(By.xpath('//span[contains(text(),"Got it")]')),10000)
     await popup.click()
     const name_input = await driver.wait(until.elementLocated(By.xpath('//input[@placeholder="Your name"]')),9000);
@@ -26,7 +26,7 @@ async function openMeet(driver: WebDriver) {
     await name_input.sendKeys("DioBot")
     const buttonInput = await driver.wait(until.elementLocated(By.xpath('//span[contains(text(),"Ask to join") or contains(text(), "Join")]')),10000)
     await buttonInput.click()
-    await driver.wait(until.elementLocated(By.id('c13452')),6000);
+    console.log("meeting joined")
   } finally {
     // await driver.quit()
   }
@@ -35,22 +35,60 @@ async function openMeet(driver: WebDriver) {
 
 async function startScreenshare(driver: WebDriver) {
 
-//   window.navigator.mediaDevices.getDisplayMedia().then(stream => {
-//     const videoEl = document.createElement("video");
-//     videoEl.srcObject = stream;
-//     videoEl.play();
-//     // document.querySelector("#style-scope ytd-watch-metadata")[0].
-//     document.getElementsByClassName("style-scope-ytd-watch-metadata")[0].appendChild(videoEl);
-// })
+  const response = await driver.executeScript(`
+
+    function wait(delayInMS) {
+      return new Promise((resolve) => setTimeout(resolve, delayInMS));
+    }
+    
+    function startRecording(stream, lengthInMS) {
+      let recorder = new MediaRecorder(stream);
+      let data = [];
+
+      recorder.ondataavailable = (event) => data.push(event.data);
+      recorder.start();
+
+      let stopped = new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = (event) => reject(event.name);
+      });
+
+      let recorded = wait(lengthInMS).then(() => {
+        if (recorder.state === "recording") {
+          recorder.stop();
+        }
+      });
+
+      return Promise.all([stopped, recorded]).then(() => data);
+    }
+    
+    console.log("before media devicees")
+    window.navigator.mediaDevices.getDisplayMedia().then(async stream => {
+      console.log("before recoridng")
+      const recordedChunks = await startRecording(stream, 10000)
+      console.log("after start recoridng")
+      let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+        const recording = document.createElement("video")
+        recording.src = URL.createObjectURL(recordedBlob);
+        const downloadButton = document.createElement("a")
+        downloadButton.href = recording.src;
+        downloadButton.download = "RecordedVideo.webm";
+        downloadButton.click()
+        console.log("after download button click")
+    })
+    `)
+
+    console.log(response)
   
 }
 
 async function main() {
+  console.log("hi")
   const driver = await getDriver()
   await openMeet(driver);
 
-  await startScreenshare(driver){
-
-  }
+  await startScreenshare(driver)
 
 }
+
+main()
